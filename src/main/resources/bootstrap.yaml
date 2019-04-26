@@ -1,0 +1,66 @@
+spring:
+  profiles:
+    active:
+      - secure
+  application:
+    name: spring-boot-admin
+  mail: #  邮件相关
+    default-encoding: UTF-8
+    host: smtp.163.com  # SMTP服务器地址
+    # SMTP服务器端口号 默认-1
+    # spring.mail.port=-1
+    username: z394642048@163.com    # 发送方帐号
+    password: ??? # 发送方授权码
+    #javaMailProperties 配置
+    properties:
+      mail:
+        smtp:
+          auth: true # 开启用户身份验证
+          starttls:
+            enable: false
+            required: false
+  boot:
+    admin:
+      notify:
+        mail:
+          to: z394642048@163.com  # 发送给谁
+          from: z394642048@163.com  # 谁发的
+server:
+  port: 8015
+
+# tag::configuration-eureka[]
+eureka:   #<1>
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    health-check-url-path: /actuator/health
+    instance-id: ${spring.application.name}:${server.port}
+  client:
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone:  http://localhost:8010/eureka
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  #<2>
+  endpoint:
+    health:
+      show-details: ALWAYS
+# end::configuration-eureka[]
+
+---
+spring:
+  profiles: insecure
+
+---
+spring:
+  profiles: secure
+  security:
+    user:
+      name: "user"
+      password: "password"
+eureka:
+  instance:
+    metadata-map:
+      user.name: "user"         #These two are needed so that the server
+      user.password: "password" #can access the protected client endpoints
